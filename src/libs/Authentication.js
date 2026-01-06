@@ -10,13 +10,23 @@ export default class AuthenticationFromDatabase {
         let keys = {}
         const storedCreds = await this.DB.session.get(this.sessionId)
         if (storedCreds && storedCreds.session) {
-            const parsedCreds = JSON.parse(storedCreds.session, WASocket.BufferJSON.reviver)
+            const parsedCreds = JSON.parse(storedCreds.session, (key, value) => {
+                if (value && value.type === 'Buffer') {
+                    return Buffer.from(value.data)
+                }
+                return value
+            })
             creds = parsedCreds.creds
             keys = parsedCreds.keys
         } else creds = WASocket.initAuthCreds()
 
         const saveState = async () => {
-            const session = JSON.stringify({ creds, keys }, WASocket.BufferJSON.replacer, 2)
+            const session = JSON.stringify({ creds, keys }, (key, value) => {
+                if (Buffer.isBuffer(value)) {
+                    return { type: 'Buffer', data: value.toJSON().data }
+                }
+                return value
+            }, 2)
             await this.DB.session.set(this.sessionId, { session })
         }
 

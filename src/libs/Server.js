@@ -4,7 +4,7 @@ import { URL } from 'url'
 export default class Server {
     app = express()
 
-    __dirname = new URL('.', import.meta.url).pathname
+    __dirname = new URL('.', import.meta.url).pathname.replace(/^\/([A-Z]:\/)/, '$1')
 
     router = express.Router()
 

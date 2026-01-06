@@ -40,7 +40,7 @@ export default class Utils {
 
     bufferToBase64 = (buffer) =>
         new Promise((resolve) => {
-            const buff = new Buffer(buffer)
+            const buff = Buffer.from(buffer)
             const base64string = buff.toString('base64') // https://nodejs.org/api/buffer.html#buftostringencoding-start-end
             return setTimeout(() => {
                 resolve(base64string)

@@ -28,9 +28,9 @@ export default class MessageHandler {
             reason: ''
         }
         if (cmdStatus.isDisabled)
-            return void (await M.reply(`🏮 This command has been disabled!\n📮 *Resason:* ${cmdStatus.reason}`))
+            return void (await M.reply(`🏮 This command has been disabled!\n📮 *Reason:* ${cmdStatus.reason}`))
         if (user.status.isBan)
-            return void (await M.reply(`🚷 You\'re Banned from using commands\n📮 *Resason:* ${user.status.reason}`))
+            return void (await M.reply(`🚷 You\'re Banned from using commands\n📮 *Reason:* ${user.status.reason}`))
         if (!command.config?.dm && M.chat === 'dm')
             return void (await M.reply('💬 This command can only be used in groups'))
         if (command.config?.modsOnly && !user.isMod)
@@ -54,7 +54,7 @@ export default class MessageHandler {
                     (await this.client.profilePictureUrl(M.sender.jid, 'image').catch(() => null)) ??
                     'https://static.wikia.nocookie.net/v__/images/7/73/Fuseu404notfound.png/revision/latest?cb=20171104190424&path-prefix=vocaloidlyrics'
                 return void (await M.replyRaw({
-                    text: `🎉 Congratuations! You've Ranked Up!\n\n*${oldRank.name} ${oldRank.data.emoji}* -> *${newRank.name} ${newRank.data.emoji}*`,
+                    text: `🎉 Congratulations! You've Ranked Up!\n\n*${oldRank.name} ${oldRank.data.emoji}* -> *${newRank.name} ${newRank.data.emoji}*`,
                     contextInfo: {
                         externalAdReply: {
                             title: `${M.sender.username ?? ''} 🔼`,
@@ -91,7 +91,7 @@ export default class MessageHandler {
                 .map((ans, i) => `${emojis[i]} *${ans}*`)
                 .join('\n')}\n\n🪧 *Note:* Use _*${
                 this.client.config.prefix
-            }answer <index>*_ to anser the quiz\n💬 *Example:* ${this.client.config.prefix}answer 1`
+            }answer <index>*_ to answer the quiz\n💬 *Example:* ${this.client.config.prefix}answer 1`
         })
     }
 

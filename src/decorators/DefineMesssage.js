@@ -32,6 +32,8 @@ export default class DefineMesssage {
             if (M.message?.buttonsResponseMessage) return M.message?.buttonsResponseMessage?.selectedButtonId || ''
             if (M.message?.listResponseMessage)
                 return M.message?.listResponseMessage?.singleSelectReply?.selectedRowId || ''
+            if (M.message?.templateButtonReplyMessage) return M.message?.templateButtonReplyMessage?.selectedId || ''
+            if (M.message?.interactiveResponseMessage) return JSON.parse(M.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.paramsJson || '{}').id || ''
             return M.message?.conversation
                 ? M.message.conversation
                 : this.supportedMediaMessages.includes(type)
