@@ -24,7 +24,7 @@ export default class Command extends BaseCommand {
         const { videoDetails } = await video.getInfo()
         await M.replyRaw({
             caption: `📗 *Title: ${videoDetails.title}*\n📕 *Channel: ${videoDetails.author.name}*\n📙 *Duration: ${videoDetails.lengthSeconds}s*`,
-            image: await this.client.util.fetchBuffer(videoDetails.thumbnails[0].url)
+            image: await this.client.util.fetchBuffer(videoDetails.thumbnails[0].url || videoDetails.thumbnails[0])
         })
         if (parseInt(videoDetails.lengthSeconds) > 600) return void (await M.reply('❌ Video is too long'))
         try {

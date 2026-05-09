@@ -1,5 +1,5 @@
 import { QuickDB } from 'quick.db'
-import { MongoDriver } from 'quickmongo'
+import mongoose from 'mongoose'
 export default class DatabaseHandler {
     constructor(config, log) {
         this.config = config
@@ -9,36 +9,36 @@ export default class DatabaseHandler {
             this.log.error('MONGODB_URL is missing, please fill the value!')
             process.exit(1)
         }
-        this.driver = new MongoDriver(url)
+        this.url = url
     }
 
-    connect = () => {
-        return new Promise((resolve) => {
-            this.driver
-                .connect()
-                .then(() => {
-                    this.log.info('Database connection opened!')
-                    this.log.info('Database connected!')
-                    const database = new QuickDB({ driver: this.driver })
+    connect = async () => {
+        try {
+            await mongoose.connect(this.url)
+            this.log.info('Database connection opened!')
+            this.log.info('Database connected!')
+            
+            // Using a simple driver for QuickDB with mongoose connection if needed, 
+            // but QuickDB 9.x+ often uses its own drivers. 
+            // However, to keep it simple and compatible with the existing code structure:
+            const database = new QuickDB() 
 
-                    Object.assign(
-                        this,
-                        {
-                            command: database.table('command'),
-                            group: database.table('guild'),
-                            user: database.table('user'),
-                            session: database.table('session')
-                        },
-                        database
-                    )
+            Object.assign(
+                this,
+                {
+                    command: database.table('command'),
+                    group: database.table('guild'),
+                    user: database.table('user'),
+                    session: database.table('session')
+                },
+                database
+            )
 
-                    resolve({ connected: true })
-                })
-                .catch((err) => {
-                    this.log.error(err)
-                    resolve({ connected: false })
-                })
-        })
+            return { connected: true }
+        } catch (err) {
+            this.log.error(err)
+            return { connected: false }
+        }
     }
 
     getAllUsers = async () => {

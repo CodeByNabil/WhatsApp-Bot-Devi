@@ -3,7 +3,6 @@ import { Innertube, UniversalCache, Utils as YTUtils } from 'youtubei.js'
 import { tmpdir } from 'os'
 import Utils from './Util.js'
 const { unlink, readFile } = promises
-import ytdl from '@distube/ytdl-core'
 export default class YT {
     constructor(url, type) {
         this.url = url
@@ -11,9 +10,23 @@ export default class YT {
         this.id = this.parseId()
     }
 
-    validateURL = () => ytdl.validateURL(this.url)
+    validateURL = () => {
+        const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.+)/
+        return regex.test(this.url)
+    }
 
-    getInfo = async () => await ytdl.getInfo(this.url)
+    getInfo = async () => {
+        const YT = await Innertube.create({ cache: new UniversalCache(false), generate_session_locally: true })
+        const info = await YT.getInfo(this.id)
+        return {
+            videoDetails: {
+                title: info.basic_info.title,
+                author: { name: info.basic_info.author },
+                lengthSeconds: info.basic_info.duration,
+                thumbnails: info.basic_info.thumbnail
+            }
+        }
+    }
 
     getBuffer = async () => {
         try {
@@ -86,9 +99,13 @@ export default class YT {
     }
 
     parseId = () => {
-        const split = this.url.split('/')
-        if (this.url.includes('youtu.be')) return split[split.length - 1]
-        return this.url.split('=')[1]
+        const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.+)/
+        const match = this.url.match(regex)
+        if (match) {
+            const id = match[1].split('&')[0]
+            return id
+        }
+        return this.url
     }
 
     utils = new Utils()

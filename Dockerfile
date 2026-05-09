@@ -1,5 +1,6 @@
 FROM node:lts-bullseye
 
+# Install system dependencies
 RUN apt-get update && \
   apt-get install -y \
   ffmpeg \
@@ -14,13 +15,19 @@ RUN apt-get update && \
   librsvg2-dev \
   libpixman-1-dev && \
   apt-get upgrade -y && \
-  npm i pm2 -g && \
   rm -rf /var/lib/apt/lists/*
 
-COPY package.json .
+# Set working directory
+WORKDIR /app
 
-RUN yarn install
+# Copy package files
+COPY package*.json ./
 
+# Install dependencies using npm
+RUN npm install
+
+# Copy the rest of the application
 COPY . .
 
-CMD ["yarn", "start"]
+# Start the application
+CMD ["npm", "start"]
