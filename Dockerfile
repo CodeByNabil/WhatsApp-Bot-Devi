@@ -1,6 +1,6 @@
-FROM node:lts-bullseye
+FROM node:20-bullseye
 
-# Install system dependencies
+# Install system dependencies for canvas and other media processing
 RUN apt-get update && \
   apt-get install -y \
   ffmpeg \
@@ -13,7 +13,8 @@ RUN apt-get update && \
   libjpeg-dev \
   libgif-dev \
   librsvg2-dev \
-  libpixman-1-dev && \
+  libpixman-1-dev \
+  pkg-config && \
   apt-get upgrade -y && \
   rm -rf /var/lib/apt/lists/*
 
@@ -24,6 +25,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies using npm
+# We use --build-from-source for canvas if prebuilt binaries fail
 RUN npm install
 
 # Copy the rest of the application
