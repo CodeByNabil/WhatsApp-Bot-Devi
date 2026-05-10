@@ -1,5 +1,5 @@
 import { QuickDB } from 'quick.db'
-import mongoose from 'mongoose'
+import { MongoDriver } from 'quickmongo'
 export default class DatabaseHandler {
     constructor(config, log) {
         this.config = config
@@ -14,14 +14,12 @@ export default class DatabaseHandler {
 
     connect = async () => {
         try {
-            await mongoose.connect(this.url)
+            const driver = new MongoDriver(this.url)
+            await driver.connect()
             this.log.info('Database connection opened!')
             this.log.info('Database connected!')
             
-            // Using a simple driver for QuickDB with mongoose connection if needed, 
-            // but QuickDB 9.x+ often uses its own drivers. 
-            // However, to keep it simple and compatible with the existing code structure:
-            const database = new QuickDB() 
+            const database = new QuickDB({ driver }) 
 
             Object.assign(
                 this,
