@@ -10,6 +10,11 @@ export default class DatabaseHandler {
             process.exit(1)
         }
         this.url = url
+        // Initialize tables with null or a dummy object to prevent 'undefined' errors
+        this.command = null
+        this.group = null
+        this.user = null
+        this.session = null
     }
 
     connect = async () => {

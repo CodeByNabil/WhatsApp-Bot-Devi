@@ -14,7 +14,11 @@ import DatabaseHandler from './handler/Database.js'
             return process.exit(1)
         }
         const database = new DatabaseHandler(config, log)
-        await database.connect()
+        const dbStatus = await database.connect()
+        if (!dbStatus.connected) {
+            log.error('Failed to connect to the database. Exiting...')
+            return process.exit(1)
+        }
         const { useDatabaseAuth } = new AuthenticationFromDatabase(config.session, database)
         const authSession = await useDatabaseAuth()
         new Devi(config, authSession, log, database, {
