@@ -9,7 +9,7 @@ export default class Command extends BaseCommand {
             category: 'fun',
             aliases: [...options],
             description: {
-                content: 'Gives you tuth and dare',
+                content: 'Gives you truth and dare',
                 usage: '[truth | dare] | td'
             },
             exp: 1

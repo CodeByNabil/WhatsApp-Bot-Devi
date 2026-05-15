@@ -15,13 +15,14 @@ export default class Command extends BaseCommand {
 
     exec = async (M, { flags, text }) => {
         const keys = Object.keys(flags)
-        const responce = M.quoted?.message.conversation ? text : null
-        if (!responce) return void M.reply('❌ Please provide a text!')
-        if (!flags) return void M.reply('❌ Reply with a valid flag')
-        if ('name' == keys[0]) {
-            await this.client.groupUpdateSubject(M.from, responce.trim())
-        } else if ('desc' == keys[0]) {
-            await this.client.groupUpdateDescription(M.from, responce.trim())
-        } else return void M.reply('❌ Reply with a valid flag')
+        const content = text || M.quoted?.message?.conversation || ''
+        if (!content) return void M.reply('❌ Please provide a text or reply to a message!')
+        if (keys.includes('name')) {
+            await this.client.groupUpdateSubject(M.from, content.trim())
+            await M.reply('✅ Group name updated!')
+        } else if (keys.includes('desc')) {
+            await this.client.groupUpdateDescription(M.from, content.trim())
+            await M.reply('✅ Group description updated!')
+        } else return void M.reply('❌ Please use --name or --desc flag!')
     }
 }

@@ -45,7 +45,11 @@ export default class YT {
                     stream.write(chunk)
                 }
 
-                stream.end()
+                await new Promise((resolve, reject) => {
+                    stream.on('finish', resolve)
+                    stream.on('error', reject)
+                    stream.end()
+                })
                 const buffer = await readFile(filename)
                 await unlink(filename)
                 return buffer
@@ -79,7 +83,18 @@ export default class YT {
             )) {
                 videoStream.write(chunk)
             }
-            videoStream.end()
+            await Promise.all([
+                new Promise((resolve, reject) => {
+                    audioStream.on('finish', resolve)
+                    audioStream.on('error', reject)
+                    audioStream.end()
+                }),
+                new Promise((resolve, reject) => {
+                    videoStream.on('finish', resolve)
+                    videoStream.on('error', reject)
+                    videoStream.end()
+                })
+            ])
 
             await this.utils.exec(`ffmpeg -i ${videoFilename} -i ${audioFilename} -c:v copy -c:a aac ${filename}`)
             const buffer = await readFile(filename)

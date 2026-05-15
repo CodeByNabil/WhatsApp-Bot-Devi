@@ -1,7 +1,9 @@
 import winston from 'winston'
 import { format } from 'date-fns'
+import { existsSync, mkdirSync } from 'fs'
 
 export const createLogger = (prod = false) => {
+    if (!existsSync('logs')) mkdirSync('logs')
     const logger = winston.createLogger({
         level: prod ? 'info' : 'debug',
         levels: {

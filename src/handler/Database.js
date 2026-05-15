@@ -40,17 +40,14 @@ export default class DatabaseHandler {
     }
 
     getAllUsers = async () => {
-        const users = (await this.user.all()).map((x) =>
-            Object.entries(x.value.whatsapp.net).reduce(
-                (acc, [key, value]) => {
-                    acc[key] = value
-                    return acc
-                },
-                {
-                    jid: `${x.id}.whatsapp.net`
-                }
-            )
-        )
+        const allData = await this.user.all()
+        const users = allData.map((x) => {
+            const data = x.value || {}
+            return {
+                jid: `${x.id}.whatsapp.net`,
+                ...data
+            }
+        })
         return users
     }
 

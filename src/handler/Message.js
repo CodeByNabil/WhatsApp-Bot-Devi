@@ -8,10 +8,10 @@ export default class MessageHandler {
 
     handler = async (M) => {
         const context = this.parseArgs(M.content)
-        this.moderate(M)
+        await this.moderate(M)
         const isCommand = M.content.startsWith(this.client.config.prefix)
         if (!isCommand) {
-            this.chatBot(M)
+            await this.chatBot(M)
             return void this.client.log.notice(
                 `(MSG): from ${M.sender.username ?? ''}  in ${M.group?.title || 'Direct Message'}`
             )
@@ -103,7 +103,7 @@ export default class MessageHandler {
 
     chatBot = async (M) => {
         if (M.chat === 'dm') return
-        if (!M.group.toggled.chatbot) return
+        if (!M.group?.toggled?.chatbot) return
         if (M.quoted?.sender) M.mentioned.push(M.quoted.sender)
         if (!M.mentioned.includes(this.client.util.sanitizeJid(this.client.user?.id ?? ''))) return
         M.mentioned.pop()
@@ -132,7 +132,7 @@ export default class MessageHandler {
 
     moderate = async (M) => {
         if (M.chat === 'dm') return
-        if (!M.group.toggled.mods) return
+        if (!M.group?.toggled?.mods) return
         if (!M.group?.admins.includes(this.client.util.sanitizeJid(this.client.user?.id ?? ''))) return
         if (M.isAdminMessage) return
         if (M.sender.isMod) return
